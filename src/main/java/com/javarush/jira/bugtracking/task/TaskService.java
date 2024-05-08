@@ -21,6 +21,7 @@ import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static com.javarush.jira.bugtracking.ObjectType.TASK;
 import static com.javarush.jira.bugtracking.task.TaskUtil.fillExtraFields;
@@ -139,5 +140,40 @@ public class TaskService {
         if (!userType.equals(possibleUserType)) {
             throw new DataConflictException(String.format(assign ? CANNOT_ASSIGN : CANNOT_UN_ASSIGN, userType, task.getStatusCode()));
         }
+    }
+
+    @Transactional
+    public void addTagsToTask(long id, Set<String> tags) {
+        Task task = handler.getRepository().getExisted(id);
+        if (task == null) {
+            throw new NotFoundException("Task with id " + id + " not found");
+        }
+        if (tags == null || tags.isEmpty()) {
+            throw new IllegalArgumentException("Tags list must not be empty");
+        }
+        for (String tag : tags) {
+            if (tag != null && !tag.isEmpty()) {
+                task.getTags().add(tag);
+            }
+        }
+        handler.getRepository().save(task);
+    }
+    @Transactional
+    public void removeTagsFromTask(long id, Set<String> tags) {
+        Task task = handler.getRepository().getExisted(id);
+
+        if (task == null) {
+            throw new NotFoundException("Task with id " + id + " not found");
+        }
+
+        if (tags == null || tags.isEmpty()) {
+            throw new IllegalArgumentException("Tags list must not be empty");
+        }
+        for (String tag : tags) {
+            if (tag != null && !tag.isEmpty()) {
+                task.getTags().remove(tag);
+            }
+        }
+        handler.getRepository().save(task);
     }
 }
