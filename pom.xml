@@ -152,6 +152,7 @@
     </dependencies>
 
     <build>
+        <finalName>JiraRush</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
